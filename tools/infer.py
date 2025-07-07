@@ -36,28 +36,6 @@ def normalize_depth(disparity_tensor):
     return normalized_disparity
 
 
-def load_model(model_path, encoder='vits'):
-    """Load trained depth estimation model"""
-    print(f"Loading model: {model_path}")
-    model_configs = {
-        'vitl': {'encoder': 'vitl', 'features': 256, 'out_channels': [256, 512, 1024, 1024], 'version': 'v2'},
-        'vitb': {'encoder': 'vitb', 'features': 128, 'out_channels': [96, 192, 384, 768], 'version': 'v2'},
-        'vits': {'encoder': 'vits', 'features': 64, 'out_channels': [48, 96, 192, 384], 'version': 'v2'}
-    }
- 
-    model = DepthAnything_AC(model_configs[encoder])
-    checkpoint = torch.load(model_path, map_location='cpu')
-    model.load_state_dict(checkpoint, strict=False)
-    model.eval()
-    if torch.cuda.is_available():
-        model.cuda()
-        print("Using GPU for inference")
-    else:
-        print("Using CPU for inference")
-    
-    return model
-
-
 def preprocess_image(image_path, target_size=518):
     """Preprocess input image"""
     
@@ -503,7 +481,7 @@ def main():
         return
     
     try:
-        model = load_model(args.model, args.encoder)
+        model = DepthAnything_AC.from_pretrained(args.model, args.encoder)
     except Exception as e:
         print(f"Failed to load model: {str(e)}")
         return

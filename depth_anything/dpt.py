@@ -188,6 +188,28 @@ class DepthAnything_AC(DPT_DINOv2):
     def __init__(self, config):
         super().__init__(**config)
 
+    def from_pretrained(self, repo_id: str, encoder='vits'):
+        from huggingface_hub import hf_hub_download
+        
+        filepath = hf_hub_download(repo_id=repo_id, filename=f"checkpoints/depth_anything_AC_{encoder}.pth")
+        
+        model_configs = {
+            'vitl': {'encoder': 'vitl', 'features': 256, 'out_channels': [256, 512, 1024, 1024], 'version': 'v2'},
+            'vitb': {'encoder': 'vitb', 'features': 128, 'out_channels': [96, 192, 384, 768], 'version': 'v2'},
+            'vits': {'encoder': 'vits', 'features': 64, 'out_channels': [48, 96, 192, 384], 'version': 'v2'}
+        }
+        
+        model = self(**model_configs[encoder])
+        checkpoint = torch.load(filepath, map_location='cpu')
+        model.load_state_dict(checkpoint, strict=False)
+        model.eval()
+        if torch.cuda.is_available():
+            model.cuda()
+            print("Using GPU for inference")
+        else:
+            print("Using CPU for inference")
+        
+        return model
 
     def get_intermediate_features(self, x):
         """
