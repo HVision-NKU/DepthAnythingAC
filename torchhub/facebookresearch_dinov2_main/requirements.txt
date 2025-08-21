@@ -1,5 +1,5 @@
 --extra-index-url https://download.pytorch.org/whl/cu117
-torch==2.0.0
+torch==2.7.1
 torchvision==0.15.0
 omegaconf
 torchmetrics==0.10.3
@@ -9,3 +9,7 @@ xformers==0.0.18
 submitit
 --extra-index-url https://pypi.nvidia.com
 cuml-cu11
+numpy>=1.22.2 # not directly required, pinned by Snyk to avoid a vulnerability
+pillow>=10.3.0 # not directly required, pinned by Snyk to avoid a vulnerability
+setuptools>=78.1.1 # not directly required, pinned by Snyk to avoid a vulnerability
+wheel>=0.38.0 # not directly required, pinned by Snyk to avoid a vulnerability
