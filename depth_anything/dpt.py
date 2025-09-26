@@ -178,7 +178,7 @@ class DPT_DINOv2(nn.Module):
         depth_all = self.depth_head(features, patch_h, patch_w,need_fp,teacher_features,alpha)
         depth=depth_all['out']
         depth = F.interpolate(depth, size=(h, w), mode="bilinear", align_corners=True)
-        depth = F.relu(depth).squeeze(1)
+        depth = F.relu(depth)  # .squeeze(1) has been removed for tensorrt
         depth_out['out']=depth
 
         return depth_out
