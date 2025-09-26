@@ -9,9 +9,7 @@ from depth_anything.dpt import DepthAnything_AC
 
 def load_model(model_path, encoder='vits'):
     model_configs = {
-        'vitl': {'encoder': 'vitl', 'features': 256, 'out_channels': [256, 512, 1024, 1024], 'version': 'v2'},
-        'vitb': {'encoder': 'vitb', 'features': 128, 'out_channels': [96, 192, 384, 768], 'version': 'v2'},
-        'vits': {'encoder': 'vits', 'features': 64, 'out_channels': [48, 96, 192, 384], 'version': 'v2'}
+        'vits': {'encoder': 'vits', 'features': 64, 'out_channels': [48, 96, 192, 384], 'version': 'v2', 'to_onnx': True}
     }
     model = DepthAnything_AC(model_configs[encoder])
     checkpoint = torch.load(model_path, map_location='cpu')

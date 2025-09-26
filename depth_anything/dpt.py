@@ -141,7 +141,7 @@ class DPTHead(nn.Module):
         
         
 class DPT_DINOv2(nn.Module):
-    def __init__(self, encoder='vitl', features=256, out_channels=[256, 512, 1024, 1024], use_bn=False, use_clstoken=False, localhub=True, version='v1'):
+    def __init__(self, encoder='vitl', features=256, out_channels=[256, 512, 1024, 1024], use_bn=False, use_clstoken=False, localhub=True, version='v1', to_onnx=False):
         super(DPT_DINOv2, self).__init__()
         
         assert encoder in ['vits', 'vitb', 'vitl']
@@ -153,6 +153,7 @@ class DPT_DINOv2(nn.Module):
         }
         self.encoder = encoder
         self.version = version
+        self.to_onnx = to_onnx
         # in case the Internet connection is not stable, please load the DINOv2 locally
         # if localhub:
         #     self.pretrained = torch.hub.load('torchhub/facebookresearch_dinov2_main', 'dinov2_{:}14'.format(encoder), source='local', pretrained=True)
@@ -178,7 +179,10 @@ class DPT_DINOv2(nn.Module):
         depth_all = self.depth_head(features, patch_h, patch_w,need_fp,teacher_features,alpha)
         depth=depth_all['out']
         depth = F.interpolate(depth, size=(h, w), mode="bilinear", align_corners=True)
-        depth = F.relu(depth)  # .squeeze(1) has been removed for tensorrt
+        if self.to_onnx:
+            depth = F.relu(depth)  # .squeeze(1) has been removed for tensorrt
+        else:
+            depth = F.relu(depth).squeeze(1)
         depth_out['out']=depth
 
         return depth_out
